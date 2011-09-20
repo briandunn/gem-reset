@@ -2,7 +2,7 @@
 module Reset
   class Gem < Struct.new(:name, :version)
     def uninstall!
-      command = "yes | gem uninstall #{name} -v #{version}"
+      command = "yes | gem uninstall #{name} -v #{version} 2> /dev/null"
       system(command) || globally(command)
     end
     def to_s
@@ -29,8 +29,10 @@ end
 bundled_gems = Reset::Gem.parse(`bundle show`)
 gemset_gems = Reset::Gem.parse(`gem list`)
 
+keepers = %w[bundler gem-reset]
+
 extra_gems = gemset_gems.reject do |gem|
-  bundled_gems.include?(gem) || gem.name == 'bundler'
+  bundled_gems.include?(gem) || keepers.include?(gem.name)
 end
 
 puts 'extra gems:', extra_gems
