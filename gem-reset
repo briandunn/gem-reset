@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+module Reset
+  class Gem < Struct.new(:name, :version)
+    def uninstall!
+      command = "yes | gem uninstall #{name} -v #{version}"
+      system(command) || globally(command)
+    end
+    def to_s
+      "#{name} (#{version})\n"
+    end
+
+    def globally command
+      puts command = "rvm gemset use global && #{command}"
+      system command
+    end
+
+    def self.parse(cli_output)
+      [].tap do |gems|
+        cli_output.scan(/(\S+) \((.*)\)/) do |name, versions|
+          versions.split(', ').each do |version|
+            gems << new(name, version)
+          end
+        end
+      end
+    end
+  end
+end
+
+bundled_gems = Reset::Gem.parse(`bundle show`)
+gemset_gems = Reset::Gem.parse(`gem list`)
+
+extra_gems = gemset_gems.reject do |gem|
+  bundled_gems.include?(gem) || gem.name == 'bundler'
+end
+
+puts 'extra gems:', extra_gems
+
+extra_gems.each(&:uninstall!)
