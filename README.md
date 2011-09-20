@@ -8,6 +8,13 @@ We use `gemsets` to avoid typing `bundle exec`.
 Sometimes our gemsets get cruft in them from bundle changes.
 This utility will sync them back up, ensuring your gemset matches your bundle.
 
+Use
+---
+
+```sh
+  gem-reset
+```
+
 Should be functionally equivalent to the `empty` dance:
 
 ```sh
