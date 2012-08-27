@@ -35,6 +35,7 @@ extra_gems = gemset_gems.reject do |gem|
   bundled_gems.include?(gem) || keepers.include?(gem.name)
 end
 
-puts 'extra gems:', extra_gems
+puts 'Extra gems:', extra_gems, "Remove? ('n' or ctrl-c to cancel)"
+continue = gets.chomp
 
-extra_gems.each(&:uninstall!)
+extra_gems.each(&:uninstall!) unless continue.downcase == 'n'
